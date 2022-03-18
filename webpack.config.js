@@ -12,10 +12,22 @@ module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시�
     module: {
         rules: [
             {
-                test: /\.js$/, // loader 가 처리해야될 파일들의 패턴 (정규표현식)
+                test: /\.css$/, // loader 가 처리해야될 파일들의 패턴 (정규표현식)
                 use: [
-                    path.resolve('./my-webpack-loader.js')
+                    'style-loader', //javascript 로 변환된 스타일 코드를 html 에 인라인 형태로 추출하여 넣기위한 로더
+                    'css-loader' // loader는 배열의 뒤에서부터 앞으로 실행된다.(css-loader -> style-loader)
                 ]
+            },
+            {
+                test: /\.png$/,
+                loader: 'file-loader',
+                options: {
+                    publicPath: './dist/', // 파일 로더가 처리하는 파일을 모듈로 사용했을때 경로 앞에 추가되는 문자열이다, 파일을 호출하는 측에선 dist 를 붙이고 파일을 호출할 것이다.
+                    name: '[name].[ext]?[hash]', // 파일 로더가 output에 복사할때 사용하는 파일 이름, [원본 파일명].[확장자]?해쉬값
+                }
+                // use: [
+                //     'file-loader'
+                // ]
             }
         ]
     }
