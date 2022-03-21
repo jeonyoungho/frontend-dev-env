@@ -1,5 +1,8 @@
 const path = require('path');
-const MyWebpackPlugin = require('./my-webpack-plugin');
+// const MyWebpackPlugin = require('./my-webpack-plugin');
+const webpack = require('webpack');
+// const childProcess = require('child_process');
+const banner = require("./banner.js")
 
 module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시스템이다.(CommonJS)
     mode: 'development',
@@ -31,6 +34,7 @@ module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시�
         ]
     },
     plugins: [
-        new MyWebpackPlugin()
+        // new MyWebpackPlugin(),
+        new webpack.BannerPlugin(banner)
     ]
 }
