@@ -4,6 +4,8 @@ const webpack = require('webpack');
 // const childProcess = require('child_process');
 const banner = require("./banner.js");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시스템이다.(CommonJS)
     mode: 'development',
@@ -19,7 +21,9 @@ module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시�
             {
                 test: /\.css$/, // loader 가 처리해야될 파일들의 패턴 (정규표현식)
                 use: [
-                    'style-loader', //javascript 로 변환된 스타일 코드를 html 에 인라인 형태로 추출하여 넣기위한 로더
+                    process.env.NODE_ENV === 'production'
+                    ? MiniCssExtractPlugin.loader
+                    : 'style-loader', //javascript 로 변환된 스타일 코드를 html 에 인라인 형태로 추출하여 넣기위한 로더
                     'css-loader' // loader는 배열의 뒤에서부터 앞으로 실행된다.(css-loader -> style-loader)
                 ]
             },
@@ -45,7 +49,17 @@ module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시�
             template: './src/index.html',
             templateParameters: {
                 env: process.env.NODE_ENV === 'development' ? '(개발용)' : ''
-            }
-        })
+            },
+            minify: process.env.NODE_ENV === 'production' ? {
+                // collapseWhitespace: true, // 빈칸 제거
+                // removeComments: true, // 주석 제거
+            } : false
+            
+        }),
+        new CleanWebpackPlugin(),
+        ...(process.env.NODE_ENV === 'production' 
+        ? [new MiniCssExtractPlugin({filename: '[name].css'})] // javascript 에서 css 파일을 뽑아내는 과정이기에 굳이 개발환경에서는 필요없다(Javascript 파일 하나로 빌드하는 것이 더 빠르다)
+        : []
+        )
     ]
 }
