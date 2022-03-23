@@ -10,7 +10,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시스템이다.(CommonJS)
     mode: 'development',
     entry: {
-        main: './src/app.js'
+        main: './app.js'
     },
     output: {
         path: path.resolve('./dist'), // output 디렉토리는 절대 경로명을 입력해준다. node 의 path 모듈을 가져와서 활용해준다.
@@ -35,6 +35,11 @@ module.exports = { // es6의 모듈 시스템은 아니고 node 의 모듈 시�
                     name: '[name].[ext]?[hash]', // 파일 로더가 output에 복사할때 사용하는 파일 이름, [원본 파일명].[확장자]?해쉬값
                     limit: 20000, // 20kb 미만의 파일은 url-loader 로 해서 base64로 변환한다.(파일을 javascript 문자열로 변환) 만약 2kb 이상일 경우 file-loader가 실행하도록 한다.
                 }
+            },
+            {
+                test: /\.js$/,
+                use: ['babel-loader'],
+                exclude: /node_modules/
             }
         ]
     },
