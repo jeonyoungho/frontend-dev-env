@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "lint": "eslint src --fix",
+    "start": "webpack-dev-server --progress"
   },
   "repository": {
     "type": "git",
@@ -39,10 +41,13 @@
     "style-loader": "^1.1.2",
     "url-loader": "^3.0.0",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1",
+    "connect-api-mocker": "^1.7.0"
   },
   "dependencies": {
-    "babel-loader": "^8.2.4"
+    "babel-loader": "^8.2.4",
+    "axios": "^0.19.1"
   },
   "husky": {
     "hooks": {
@@ -50,6 +55,6 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "src/*.js": "eslint --fix"
   }
 }
