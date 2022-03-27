@@ -3,3 +3,4 @@ babel.config.js
 form.js
 result.js
 app.js
+dist/

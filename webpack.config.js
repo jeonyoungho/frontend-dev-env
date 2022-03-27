@@ -7,12 +7,18 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const apiMocker = require('connect-api-mocker');
+const OptimizeCSSAssertsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
   // es6의 모듈 시스템은 아니고 node 의 모듈 시스템이다.(CommonJS)
-  mode: "development",
+  mode,
   entry: {
-    main: "./src/app.js"
+    main: "./src/app.js",
+    // result: "./src/result.js"
   },
   output: {
     path: path.resolve("./dist"), // output 디렉토리는 절대 경로명을 입력해준다. node 의 path 모듈을 가져와서 활용해준다.
@@ -25,6 +31,24 @@ module.exports = {
       app.use(apiMocker('/api', 'mocks/api'));
     },
     hot: true
+  },
+  optimization: {
+    minimizer: mode === "production" ? [
+      new OptimizeCSSAssertsPlugin(),
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true // 콘솔 로그를 제거한다.
+          }
+        }
+      })
+    ] : [],
+    // splitChunks: {
+    //   chunks: "all" // 중복되는 코드를 제거하고 엔트리 포인트를 다시 빌드한다.
+    // }
+  },
+  externals: {
+    axios: "axios" //  웹팩으로 빌드할떄 axios모듈을 사용하는 부분이 있으면 전역변수 axios를 사용하는 것으로 간주하라는 설정
   },
   module: {
     rules: [
@@ -69,14 +93,20 @@ module.exports = {
       minify:
         process.env.NODE_ENV === "production"
           ? {
-              // collapseWhitespace: true, // 빈칸 제거
-              // removeComments: true, // 주석 제거
+              collapseWhitespace: true, // 빈칸 제거
+              removeComments: true, // 주석 제거
             }
           : false
     }),
     new CleanWebpackPlugin(),
     ...(process.env.NODE_ENV === "production"
       ? [new MiniCssExtractPlugin({ filename: "[name].css" })] // javascript 에서 css 파일을 뽑아내는 과정이기에 굳이 개발환경에서는 필요없다(Javascript 파일 하나로 빌드하는 것이 더 빠르다)
-      : [])
+      : []),
+    new CopyPlugin([
+      {
+        from: './node_modules/axios/dist/axios.min.js',
+        to: "./axios.min.js"
+      }
+    ])
   ]
 };
